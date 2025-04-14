@@ -62,17 +62,7 @@ def tasks():
                         status=status, user=user)
         db.session.add(new_task)
         db.session.commit()
-
-        if "credentials" in session:
-            credentials = google.oauth2.credentials.Credentials(**session["credentials"])
-            insert_event_in_google(new_task, credentials)
-
-        reminder_time = new_task.date_time - timedelta(hours=1)
-        if reminder_time > datetime.utcnow():
-            send_email_reminder.apply_async(
-                args=[new_task.id, new_task.title, new_task.date_time.isoformat()],
-                eta=reminder_time
-            )
+        
         return redirect("/tasks")
 
     filtro = request.args.get('filter', 'all')
